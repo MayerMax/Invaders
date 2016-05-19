@@ -9,32 +9,45 @@ namespace Invaders
 {
     class Shot
     {
-        public const double ShotPixelsPerSecond = 90;
+        private const int interval = 15;
+        private const int width = 3;
+        private const int height = 10;
+
 
         public Point Location { get; private set; }
 
-        public static Size ShotSize = new Size(2, 10);
+        
+        public Direction Direction { get; set; }
+        public Rectangle Boundaries { get; set;}
 
-        private Direction _direction;
-        public Direction Direction { get; private set;}
+        ///private DateTime _lastMoved;
 
-        private DateTime _lastMoved;
-
-        public Shot(Point location, Direction direction)
+        public Shot(Point location, Direction direction, Rectangle boundaries)
         {
             Location = location;
-            _direction = direction;
-            _lastMoved = DateTime.Now;
+            Direction = direction;
+            Boundaries = boundaries;
         }
 
-        public void Move()
+        public void Draw(Graphics g)
         {
-            TimeSpan timeSinceLastMove = DateTime.Now - _lastMoved;
-            double distanceToPass = timeSinceLastMove.Milliseconds * ShotPixelsPerSecond / 1000;
-            if (Direction == Direction.Up)
-                distanceToPass = distanceToPass * -1;
-            Location = new Point(Location.X, Location.Y + (int)distanceToPass);
-            _lastMoved = DateTime.Now;
+            g.FillRectangle(Brushes.Yellow, Location.X, Location.Y, width, height);
+        }
+
+        public bool Move()
+        {
+            Point newPlace;
+            if (Direction == Direction.Down)
+                newPlace = new Point(Location.X, Location.Y + interval);
+            else
+                newPlace = new Point(Location.X, Location.Y - interval);
+
+            if (newPlace.Y < Boundaries.Height && newPlace.Y > 0)
+            {
+                Location = newPlace;
+                return true;
+            }
+            return false;
         }
 
 
